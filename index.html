@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="Universal Open Source Client-Side Paper Wallet Generator for BitCoins and other cryptocurrencies. Create your own paper wallet in a few easy steps : Generate, Print and Fold !">
-  <meta name="keywords" content="universal, paper, wallet, generator, cryptocurrencies, bitcoin, litecoin, dogecoin" />
+  <meta name="description" content="Commercium Client-Side Paper Wallet Generator. Create your own paper wallet in a few easy steps : Generate, Print and Fold !">
+  <meta name="keywords" content="commercium, paper, wallet, generator, cryptocurrencies" />
 
   <!--
 
@@ -51,7 +51,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   GitHub Repository: https://github.com/MichaelMure/WalletGenerator.net
   -->
 
-  <title>WalletGenerator.net - Universal Paper wallet generator for Bitcoin and other cryptocurrencies</title>
+  <title>CommerciumPaper wallet generator</title>
 
   <script type="text/javascript">
 // Array.prototype.map function is in the public domain.
@@ -5136,7 +5136,7 @@ Bitcoin.ECKey = (function () {
 	/**
 	* Whether public keys should be returned compressed by default.
 	*/
-	ECKey.compressByDefault = false;
+	ECKey.compressByDefault = true;
 
 	/**
 	* Set whether the public key should be returned compressed or not.
@@ -9899,13 +9899,13 @@ Walletgenerator.net use the same security measures as the original project. All-
           <div id="bulkcommands" class="row">
             <span><label id="bulklabelstartindex" for="bulkstartindex" class="i18n">Start index:</label> <input type="text" id="bulkstartindex" value="1" /></span>
             <span><label id="bulklabelrowstogenerate" for="bulklimit" class="i18n">Rows to generate:</label> <input type="text" id="bulklimit" value="3" /></span>
-            <span><label id="bulklabelcompressed" for="bulkcompressed" class="i18n">Compressed addresses?</label> <input type="checkbox" id="bulkcompressed" /></span>
+            <span style="display:none"><label id="bulklabelcompressed" for="bulkcompressed" class="i18n">Compressed addresses?</label> <input type="checkbox" id="bulkcompressed" checked/></span>
             <span><input type="button" id="bulkgenerate" value="Generate" onclick="ninja.wallets.bulkwallet.buildCSV(document.getElementById('bulklimit').value * 1, document.getElementById('bulkstartindex').value * 1, document.getElementById('bulkcompressed').checked);" /> </span>
             <span class="print"><input type="button" name="print" id="bulkprint" value="Print" onclick="window.print();" /></span>
           </div>
         </div>
         <div class="body">
-          <span class="label i18n" id="bulklabelcsv">Comma Separated Values: Index,Address,Private Key (WIF)</span>
+          <span class="label i18n" id="bulklabelcsv">Comma Separated Values: Index,Address,Private Key (CWIF)</span>
           <textarea rows="20" cols="88" id="bulktextarea"></textarea>
         </div>
       </div>
@@ -10484,13 +10484,6 @@ janin.currency = {
     // Switch currency
     useCurrency: function(index) {
         janin.selectedCurrency = janin.currencies[index];
-
-        var coinImgUrl = "logos/" + janin.currency.name().toLowerCase() + ".png";
-        document.getElementById("coinLogoImg").src = coinImgUrl;
-
-        // Update title depending on currency
-        document.title = janin.currency.name() + " " + ninja.translator.get("title");
-        document.getElementById("siteTitle").alt = janin.currency.name() + " " + ninja.translator.get("title");
 
         // Update i18n link
         document.getElementById("cultureen").href = "?culture=en&currency=" + janin.currency.name().toLowerCase();
@@ -12123,7 +12116,7 @@ ninja.wallets.singlewallet = {
 		}
 		document.getElementById("walletCommands").style.display = "block";
 		document.getElementById("keyarea").style.display = "block";
-		document.getElementById("currencyddl").style.display = "block";
+		document.getElementById("currencyddl").style.display = "none";
 		document.getElementById("singlearea").style.display = "block";
 		document.getElementById("initBanner").style.display = "none";
 	},
@@ -12659,19 +12652,19 @@ ninja.wallets.detailwallet = {
 ninja.wallets.donate = {
     open: function () {
         document.getElementById("donatearea").style.display = "block";
+        this.displayQrCode()
     },
 
     close: function () {
         document.getElementById("donatearea").style.display = "none";
     },
     
-    displayQrCode: function (currencyid, e) {
+    displayQrCode: function () {
         var keyValuePair = {};
-    	keyValuePair["donateqrcode"] = janin.currencies[currencyid].donate;
+    	keyValuePair.donateqrcode = janin.selectedCurrency.donate;
 		ninja.qrCode.showQrCode(keyValuePair, 4);
         
         document.getElementById("donateqrcode").style.display = "block";
-        document.getElementById("donateqrcode").style.top = (e.offsetTop+15) + 'px';
     }
 };
   </script>
@@ -13291,7 +13284,6 @@ for(i = 0; i < janin.currencies.length; i++) {
 // Reset title if no currency is choosen
 if(ninja.getQueryString()["currency"] == null) {
     document.title = ninja.translator.get("defaultTitle");
-    document.getElementById("siteTitle").alt = ninja.translator.get("defaultTitle");
 }
 // populate currency dropdown list
 var select = document.getElementById("currency");
@@ -13318,20 +13310,6 @@ for(i = 0; i < janin.currencies.length; i++) {
 }
 supportedcurrencies.innerHTML = currencieslist;
 document.getElementById("supportedcurrenciescounter").innerHTML = j.toString() + " ";
-// populate donate list
-document.getElementById("donateqrcode").style.display = "none";
-var donatelist = document.getElementById("donatelist");
-var list = "<table>";
-for(i = 0; i < janin.currencies.length; i++) {
-	if(janin.currencies[i].donate == null)
-		continue;
-    list += "<tr onmouseover='ninja.wallets.donate.displayQrCode("+i+", this)'>";
-    list += "<td class='currencyNameColumn'>"+janin.currencies[i].name+"</td>";
-    list += "<td class='address'><a href='"+janin.currencies[i].name.toLowerCase()+":"+janin.currencies[i].donate+"'>";
-    list += janin.currencies[i].donate+"</a></td></tr>";
-}
-list += "</table>";
-donatelist.innerHTML = list;
 
 // run unit tests
 if (ninja.getQueryString()["unittests"] == "true" || ninja.getQueryString()["unittests"] == "1") {

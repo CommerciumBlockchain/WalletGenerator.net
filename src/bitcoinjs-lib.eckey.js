@@ -46,7 +46,7 @@ Bitcoin.ECKey = (function () {
 	/**
 	* Whether public keys should be returned compressed by default.
 	*/
-	ECKey.compressByDefault = false;
+	ECKey.compressByDefault = true;
 
 	/**
 	* Set whether the public key should be returned compressed or not.
